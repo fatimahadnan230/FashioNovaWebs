@@ -335,7 +335,8 @@
                         instances: { prompt: fullPrompt },
                         parameters: { "sampleCount": 1 }
                     };
-                    const apiKey = ""; // Canvas will automatically provide this in runtime. DO NOT ADD your API key here.
+                    // API Key updated here:
+                    const apiKey = "AIzaSyDAznDnVnnOlw_qyRT9Ycu579mKsHSQ5l0"; 
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
 
                     const response = await fetch(apiUrl, {
