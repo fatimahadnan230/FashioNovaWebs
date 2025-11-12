@@ -1,143 +1,659 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Fashionova AI - Fashion Design Generator</title>
-  <style>
-    body {
-      font-family: "Poppins", sans-serif;
-      background: linear-gradient(135deg, #f8f9fa, #e3f2fd);
-      color: #333;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-    }
-    h1 {
-      margin-top: 40px;
-      color: #222;
-    }
-    .container {
-      width: 90%;
-      max-width: 800px;
-      background: white;
-      padding: 25px;
-      border-radius: 15px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-      text-align: center;
-      margin-top: 20px;
-    }
-    textarea, select {
-      width: 100%;
-      padding: 10px;
-      border-radius: 10px;
-      border: 1px solid #ccc;
-      font-size: 16px;
-      margin-bottom: 15px;
-      resize: none;
-    }
-    button {
-      background-color: #007bff;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background 0.3s ease;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .image-container {
-      margin-top: 25px;
-    }
-    .image-container img {
-      width: 100%;
-      border-radius: 15px;
-      margin-top: 15px;
-      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
-    }
-    .loading {
-      font-size: 18px;
-      color: #007bff;
-      margin-top: 10px;
-    }
-    .options {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      margin-bottom: 10px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FashioNova - AI Fashion Design Generator</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter for body text -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- React and ReactDOM CDNs -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <!-- Babel for in-browser JSX compilation -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        /* Custom CSS Variables for Pastel Theme */
+        :root {
+            --lavender: hsl(267, 84%, 81%); /* Main accent */
+            --light-blue: hsl(199, 92%, 73%); /* Secondary accent */
+            --soft-pink: hsl(336, 68%, 85%); /* Tertiary accent */
+            --mint-green: hsl(142, 69%, 78%); /* Complementary */
+            --peach: hsl(25, 95%, 73%); /* Warm accent */
+            --lilac: hsl(262, 83%, 90%); /* Lightest accent */
+            --text-gray: #4b5563; /* Darker gray for main text */
+            --light-gray: #d1d5db; /* Lighter gray for borders/dividers */
+        }
+        
+        /* Apply Inter font and background gradient to body */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, var(--lilac) 0%, var(--soft-pink) 100%);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-gray);
+        }
+        
+        /* Custom gradient classes */
+        .gradient-lavender-blue {
+            background: linear-gradient(135deg, var(--lavender), var(--light-blue));
+        }
+        
+        .gradient-pink-peach {
+            background: linear-gradient(135deg, var(--soft-pink), var(--peach));
+        }
+        
+        .gradient-mint-blue {
+            background: linear-gradient(135deg, var(--mint-green), var(--light-blue));
+        }
+        
+        /* Navigation item styling */
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            color: var(--text-gray);
+        }
+        
+        .nav-item.active {
+            background: linear-gradient(135deg, var(--lavender), var(--light-blue));
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-item:hover:not(.active) {
+            background: linear-gradient(135deg, var(--soft-pink), var(--peach));
+            color: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Card styling */
+        .card {
+            background: white;
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.08); /* Softer shadow */
+            border: 1px solid var(--light-gray);
+        }
+        
+        /* Primary button styling */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--lavender), var(--light-blue));
+            color: white;
+            padding: 0.75rem 2rem;
+            border-radius: 1rem;
+            font-weight: 600; /* Slightly bolder */
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px); /* More pronounced hover */
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Input field styling */
+        .input-field {
+            width: 100%;
+            padding: 1rem;
+            border: 2px solid var(--light-gray);
+            border-radius: 1rem;
+            background: #f9fafb;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--lavender);
+            box-shadow: 0 0 0 3px rgba(var(--lavender-rgb), 0.3); /* Soft focus ring */
+        }
+        
+        /* Design card styling */
+        .design-card {
+            background: white;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--light-gray);
+        }
+        
+        .design-card:hover {
+            transform: translateY(-5px); /* More pronounced hover */
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .flex-col-md {
+                flex-direction: column;
+            }
+            .w-80-md {
+                width: 100%;
+                height: auto;
+                border-radius: 0;
+                border-bottom: 1px solid var(--light-gray);
+            }
+            .sidebar-nav-md {
+                flex-direction: row;
+                justify-content: space-around;
+                padding: 1rem 0;
+            }
+            .nav-item {
+                padding: 0.5rem 0.75rem;
+                font-size: 0.875rem;
+            }
+            .max-w-4xl-md {
+                max-width: 100%;
+                padding: 1rem;
+            }
+            .grid-cols-1-md {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-<body>
-  <h1>👗 Fashionova AI</h1>
-  <div class="container">
-    <p>Describe your fashion idea and let AI design it instantly!</p>
-    <div class="options">
-      <select id="style">
-        <option value="modern">Modern</option>
-        <option value="vintage">Vintage</option>
-        <option value="streetwear">Streetwear</option>
-        <option value="formal">Formal</option>
-        <option value="K-pop">K-pop Inspired</option>
-      </select>
-      <select id="category">
-        <option value="dress">Dress</option>
-        <option value="jacket">Jacket</option>
-        <option value="shirt">Shirt</option>
-        <option value="pants">Pants</option>
-        <option value="accessories">Accessories</option>
-      </select>
-    </div>
-    <textarea id="prompt" placeholder="e.g., a modern floral summer dress with puff sleeves"></textarea>
-    <br />
-    <button id="generateBtn">Generate Design</button>
-    <div id="loading" class="loading" style="display:none;">🎨 Generating your fashion design...</div>
-    <div class="image-container" id="imageContainer"></div>
-  </div>
+<body class="bg-gray-100">
+    <div id="root" class="flex flex-col md:flex-row h-screen w-full"></div>
 
-  <script>
-    const btn = document.getElementById("generateBtn");
-    const promptBox = document.getElementById("prompt");
-    const styleSelect = document.getElementById("style");
-    const categorySelect = document.getElementById("category");
-    const loadingText = document.getElementById("loading");
-    const imageContainer = document.getElementById("imageContainer");
+    <script type="text/babel">
+        const { useState, useEffect } = React;
 
-    btn.addEventListener("click", async () => {
-      const prompt = promptBox.value.trim();
-      const style = styleSelect.value;
-      const category = categorySelect.value;
+        // --- Mock Data for Demo ---
+        const initialDesigns = [
+            {
+                id: 1,
+                title: "Summer Floral Dress",
+                description: "A flowing summer dress with beautiful floral patterns",
+                imageUrl: "https://placehold.co/400x300/e0b0ff/ffffff?text=Floral+Dress",
+                category: "dress",
+                style: "casual",
+                isFavorite: false
+            },
+            {
+                id: 2,
+                title: "Modern Casual Top",
+                description: "A comfortable modern top with clean lines",
+                imageUrl: "https://placehold.co/400x300/a0c4ff/ffffff?text=Modern+Top",
+                category: "top",
+                style: "modern",
+                isFavorite: true
+            },
+            {
+                id: 3,
+                title: "Elegant Evening Wear",
+                description: "Sophisticated evening dress for special occasions",
+                imageUrl: "https://placehold.co/400x300/ffb3c1/ffffff?text=Evening+Wear",
+                category: "dress",
+                style: "formal",
+                isFavorite: false
+            }
+        ];
 
-      if (!prompt) {
-        alert("Please enter a description of your design!");
-        return;
-      }
+        // --- Global State for Demo (No Database) ---
+        // In a real app, this would come from a backend/database
+        let globalDesigns = [...initialDesigns]; // Use a mutable copy for demo purposes
 
-      loadingText.style.display = "block";
-      imageContainer.innerHTML = "";
+        // --- Components ---
 
-      const fullPrompt = `Fashion design of a ${category} in ${style} style, ${prompt}`;
-      const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}`;
+        function Sidebar({ activeSection, onSectionChange, isLoggedIn, onLoginLogout }) {
+            const navItems = [
+                { id: "generate", label: "Generate", icon: "✨" },
+                { id: "gallery", label: "Gallery", icon: "🖼️" },
+                { id: "favorites", label: "Favorites", icon: "❤️" },
+                { id: "share", label: "Share", icon: "📤" }
+            ];
 
-      const img = document.createElement("img");
-      img.src = imageUrl;
-      img.alt = fullPrompt;
+            return (
+                <div className="w-80-md bg-white shadow-xl md:rounded-r-3xl border-r border-purple-100 md:h-screen flex-shrink-0">
+                    <div className="p-6 border-b border-purple-100 flex items-center justify-between md:justify-start space-x-3">
+                        <div className="flex items-center space-x-3">
+                            <div className="w-12 h-12 gradient-lavender-blue rounded-2xl flex items-center justify-center">
+                                <span className="text-white text-xl">👗</span>
+                            </div>
+                            <div>
+                                <h1 className="text-xl font-bold text-gray-800">FashioNova</h1>
+                                <p className="text-sm text-gray-500">AI Design Generator</p>
+                            </div>
+                        </div>
+                        {/* Login/Logout for Mobile */}
+                        <div className="md:hidden">
+                            <LoginLogoutButton isLoggedIn={isLoggedIn} onLoginLogout={onLoginLogout} />
+                        </div>
+                    </div>
 
-      img.onload = () => (loadingText.style.display = "none");
-      img.onerror = () => {
-        loadingText.style.display = "none";
-        alert("Error generating image. Please try again.");
-      };
+                    <nav className="p-4 space-y-2 flex flex-col sidebar-nav-md">
+                        {navItems.map((item) => (
+                            <div
+                                key={item.id}
+                                onClick={() => onSectionChange(item.id)}
+                                className={`nav-item ${activeSection === item.id ? "active" : ""}`}
+                            >
+                                <span className="text-lg">{item.icon}</span>
+                                <span>{item.label}</span>
+                            </div>
+                        ))}
+                    </nav>
 
-      imageContainer.appendChild(img);
-    });
-  </script>
+                    <div className="p-4 mt-auto hidden md:block"> {/* Only visible on desktop */}
+                        <div className="gradient-mint-blue rounded-2xl p-4 text-white">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm opacity-90">Designs Created</p>
+                                    <p className="text-2xl font-bold">{globalDesigns.length}</p>
+                                </div>
+                                <span className="text-2xl">📈</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function LoginLogoutButton({ isLoggedIn, onLoginLogout }) {
+            return (
+                <button
+                    onClick={onLoginLogout}
+                    className="btn-primary text-sm px-4 py-2 rounded-full"
+                >
+                    {isLoggedIn ? "Logout" : "Login"}
+                </button>
+            );
+        }
+
+        function DesignCard({ design, onToggleFavorite }) {
+            return (
+                <div className="design-card">
+                    <img
+                        src={design.imageUrl}
+                        alt={design.title}
+                        className="w-full h-48 object-cover"
+                        onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/400x300/cccccc/333333?text=Image+Error"; }}
+                    />
+                    <div className="p-4">
+                        <h5 className="font-medium text-gray-800 mb-1">{design.title}</h5>
+                        <p className="text-sm text-gray-600 mb-2">{design.description}</p>
+                        <div className="flex items-center justify-between">
+                            <span className="text-xs px-2 py-1 bg-purple-100 text-purple-800 rounded-full">
+                                {design.category}
+                            </span>
+                            <span
+                                className="text-red-500 cursor-pointer text-xl"
+                                onClick={() => onToggleFavorite(design.id)}
+                            >
+                                {design.isFavorite ? "❤️" : "🤍"}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function GenerateSection({ onDesignGenerated }) {
+            const [prompt, setPrompt] = useState("");
+            const [style, setStyle] = useState("modern");
+            const [category, setCategory] = useState("general");
+            const [generating, setGenerating] = useState(false);
+            const [generatedImageUrl, setGeneratedImageUrl] = useState("");
+            const [error, setError] = useState(null);
+
+            const handleGenerate = async () => {
+              if (!prompt.trim()) {
+                alert("Please enter a description for your design.");
+                return;
+              }
+              setGenerating(true);
+              setGeneratedImageUrl("");
+              setError(null);
+              
+              try {
+                const fullPrompt = `fashion design of ${category} in ${style} style, ${prompt}`;
+                // Use Pollinations.ai for instant image generation (no key needed)
+                const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}`;
+                
+                // Simulate a short loading time
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                setGeneratedImageUrl(imageUrl);
+                
+                // Add to global designs for demo
+                const newDesign = {
+                  id: globalDesigns.length + 1,
+                  title: prompt.substring(0, 50) + (prompt.length > 50 ? "..." : ""),
+                  description: prompt,
+                  imageUrl: imageUrl,
+                  category: category,
+                  style: style,
+                  isFavorite: false
+                };
+                globalDesigns.unshift(newDesign);
+                onDesignGenerated();
+              } catch (err) {
+                console.error("Error generating image:", err);
+                setError("Error generating design. Please try again.");
+              } finally {
+                setGenerating(false);
+              }
+            };
+
+
+            return (
+                <div className="p-4 md:p-8 flex-1 overflow-y-auto">
+                    <div className="max-w-4xl-md mx-auto">
+                        <div className="card p-6 md:p-8 mb-6 md:mb-8">
+                            <div className="text-center mb-6 md:mb-8">
+                                <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-2">
+                                    Create Your Perfect Design
+                                </h3>
+                                <p className="text-gray-600 text-sm md:text-base">
+                                    Describe your fashion vision and let AI bring it to life
+                                </p>
+                            </div>
+
+                            <div className="max-w-2xl mx-auto">
+                                <textarea
+                                    value={prompt}
+                                    onChange={(e) => setPrompt(e.target.value)}
+                                    className="input-field h-24 md:h-32 mb-4 md:mb-6 resize-none"
+                                    placeholder="Describe your fashion design... (e.g., 'A flowing summer dress with floral patterns in pastel colors')"
+                                />
+
+                                <div className="flex flex-col md:flex-row items-center justify-between space-y-4 md:space-y-0 md:space-x-4">
+                                    <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-4 w-full md:w-auto">
+                                        <select
+                                            value={style}
+                                            onChange={(e) => setStyle(e.target.value)}
+                                            className="input-field w-full md:w-40"
+                                        >
+                                            <option value="modern">Modern</option>
+                                            <option value="vintage">Vintage</option>
+                                            <option value="casual">Casual</option>
+                                            <option value="formal">Formal</option>
+                                            <option value="bohemian">Bohemian</option>
+                                        </select>
+                                        <select
+                                            value={category}
+                                            onChange={(e) => setCategory(e.target.value)}
+                                            className="input-field w-full md:w-40"
+                                        >
+                                            <option value="general">General</option>
+                                            <option value="dress">Dress</option>
+                                            <option value="top">Top</option>
+                                            <option value="bottom">Bottom</option>
+                                            <option value="accessory">Accessory</option>
+                                            <option value="shoes">Shoes</option>
+                                        </select>
+                                    </div>
+                                    <button
+                                        onClick={handleGenerate}
+                                        disabled={generating}
+                                        className="btn-primary w-full md:w-auto"
+                                    >
+                                        {generating ? "Generating..." : "✨ Generate Design"}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="card p-6 md:p-8">
+                            <h4 className="text-xl font-bold text-gray-800 mb-6">Generated Designs</h4>
+                            {generating && (
+                                <div className="text-center py-6 text-gray-500">
+                                    <p>Generating your design...</p>
+                                    <p className="text-sm mt-2">This might take a moment. Please wait.</p>
+                                </div>
+                            )}
+                            {error && (
+                                <div className="text-center py-6 text-red-500">
+                                    <p>Error: {error}</p>
+                                    <p className="text-sm mt-2">Please try a different prompt or check your API connection.</p>
+                                </div>
+                            )}
+                            {generatedImageUrl && (
+                                <div className="w-full max-w-md mx-auto mb-6 design-card">
+                                    <img src={generatedImageUrl} alt="AI Generated Fashion Design" className="w-full h-auto object-cover rounded-xl" />
+                                    <div className="p-4 text-center">
+                                        <p className="text-gray-700 font-semibold">Your new design!</p>
+                                    </div>
+                                </div>
+                            )}
+                            {/* Display initial mock designs or previous generated designs */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                {globalDesigns.slice(0, 3).map((design) => ( // Show first 3 for brevity
+                                    <DesignCard 
+                                        key={design.id} 
+                                        design={design} 
+                                        onToggleFavorite={() => { /* Not implemented for demo */ }} 
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function GallerySection({ designs, onToggleFavorite }) {
+            return (
+                <div className="p-4 md:p-8 flex-1 overflow-y-auto">
+                    <div className="max-w-6xl mx-auto">
+                        <div className="card p-6 md:p-8">
+                            <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-6">Design Gallery</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                                {designs.map((design) => (
+                                    <DesignCard 
+                                        key={design.id} 
+                                        design={design} 
+                                        onToggleFavorite={onToggleFavorite} 
+                                    />
+                                ))}
+                            </div>
+                            {designs.length === 0 && (
+                                <div className="text-center py-12 text-gray-500">
+                                    <p>No designs in your gallery yet. Generate some!</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function FavoritesSection({ designs, onToggleFavorite }) {
+            const favoriteDesigns = designs.filter(d => d.isFavorite);
+            
+            return (
+                <div className="p-4 md:p-8 flex-1 overflow-y-auto">
+                    <div className="max-w-6xl mx-auto">
+                        <div className="card p-6 md:p-8">
+                            <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-6">Your Favorite Designs</h3>
+                            {favoriteDesigns.length > 0 ? (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {favoriteDesigns.map((design) => (
+                                        <DesignCard 
+                                            key={design.id} 
+                                            design={design} 
+                                            onToggleFavorite={onToggleFavorite} 
+                                        />
+                                    ))}
+                                </div>
+                            ) : (
+                                <div className="text-center py-12">
+                                    <span className="text-6xl mb-4 block">❤️</span>
+                                    <p className="text-gray-500">No favorite designs yet. Heart designs in your gallery to save them here!</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function ShareSection() {
+            // Simplified for demo - in a real app, this would handle actual sharing/export
+            return (
+                <div className="p-4 md:p-8 flex-1 overflow-y-auto">
+                    <div className="max-w-6xl mx-auto">
+                        <div className="card p-6 md:p-8">
+                            <h3 className="text-xl md:text-2xl font-bold text-gray-800 mb-6">Share Your Creation</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div>
+                                    <h4 className="font-medium text-gray-800 mb-4">Export Options</h4>
+                                    <div className="space-y-3">
+                                        <button className="w-full p-3 text-left border-2 border-purple-200 rounded-xl hover:border-purple-400 transition-colors">
+                                            <span className="text-blue-500 mr-3">📥</span>
+                                            <span>Download PNG</span>
+                                        </button>
+                                        <button className="w-full p-3 text-left border-2 border-purple-200 rounded-xl hover:border-purple-400 transition-colors">
+                                            <span className="text-red-500 mr-3">📄</span>
+                                            <span>Export PDF</span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4 className="font-medium text-gray-800 mb-4">Share on Social</h4>
+                                    <div className="space-y-3">
+                                        <button className="w-full p-3 text-left border-2 border-purple-200 rounded-xl hover:border-purple-400 transition-colors">
+                                            <span className="text-pink-500 mr-3">📸</span>
+                                            <span>Instagram</span>
+                                        </button>
+                                        <button className="w-full p-3 text-left border-2 border-purple-200 rounded-xl hover:border-purple-400 transition-colors">
+                                            <span className="text-blue-500 mr-3">🐦</span>
+                                            <span>Twitter</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+
+        function App() {
+            const [activeSection, setActiveSection] = useState("generate");
+            const [isLoggedIn, setIsLoggedIn] = useState(false);
+            const [designs, setDesigns] = useState(initialDesigns); // Manage designs in App state
+
+            // Function to update designs when a new one is generated
+            const handleNewDesignGenerated = () => {
+                setDesigns([...globalDesigns]); // Force update from globalDesigns
+            };
+
+            // Function to toggle favorite status
+            const handleToggleFavorite = (id) => {
+                const updatedDesigns = designs.map(design =>
+                    design.id === id ? { ...design, isFavorite: !design.isFavorite } : design
+                );
+                setDesigns(updatedDesigns);
+                globalDesigns = updatedDesigns; // Update global for demo
+            };
+
+            const handleLoginLogout = () => {
+                setIsLoggedIn(!isLoggedIn);
+                alert(isLoggedIn ? "Logged out (demo only)" : "Logged in (demo only)");
+            };
+
+            const sectionConfig = {
+                generate: {
+                    title: "Generate Design",
+                    subtitle: "Create stunning fashion designs with AI",
+                },
+                gallery: {
+                    title: "Design Gallery",
+                    subtitle: "Browse your creative collection",
+                },
+                favorites: {
+                    title: "Favorite Designs",
+                    subtitle: "Your saved inspirations",
+                },
+                share: {
+                    title: "Share & Export",
+                    subtitle: "Share your designs with the world",
+                },
+            };
+
+            const renderSection = () => {
+                switch (activeSection) {
+                    case "generate":
+                        return <GenerateSection onDesignGenerated={handleNewDesignGenerated} />;
+                    case "gallery":
+                        return <GallerySection designs={designs} onToggleFavorite={handleToggleFavorite} />;
+                    case "favorites":
+                        return <FavoritesSection designs={designs} onToggleFavorite={handleToggleFavorite} />;
+                    case "share":
+                        return <ShareSection />;
+                    default:
+                        return <GenerateSection onDesignGenerated={handleNewDesignGenerated} />;
+                }
+            };
+
+            return (
+                <div className="flex flex-col md:flex-row h-screen w-full">
+                    <Sidebar 
+                        activeSection={activeSection} 
+                        onSectionChange={setActiveSection} 
+                        isLoggedIn={isLoggedIn}
+                        onLoginLogout={handleLoginLogout}
+                    />
+                    
+                    <div className="flex-1 flex flex-col overflow-hidden">
+                        <header className="bg-white shadow-sm border-b border-purple-100 px-4 py-3 md:px-8 md:py-4 flex-shrink-0">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <h2 className="text-xl md:text-2xl font-bold text-gray-800">
+                                        {sectionConfig[activeSection].title}
+                                    </h2>
+                                    <p className="text-gray-600 text-sm md:text-base mt-1">
+                                        {sectionConfig[activeSection].subtitle}
+                                    </p>
+                                </div>
+                                <div className="flex items-center space-x-2 md:space-x-4">
+                                    <button className="p-2 rounded-xl hover:bg-purple-50 transition-colors hidden md:block">
+                                        <span className="text-gray-600">🔔</span>
+                                    </button>
+                                    <button className="p-2 rounded-xl hover:bg-purple-50 transition-colors hidden md:block">
+                                        <span className="text-gray-600">⚙️</span>
+                                    </button>
+                                    <div className="hidden md:block"> {/* Login/Logout for Desktop */}
+                                        <LoginLogoutButton isLoggedIn={isLoggedIn} onLoginLogout={handleLoginLogout} />
+                                    </div>
+                                    <div className="w-10 h-10 gradient-lavender-blue rounded-full flex items-center justify-center">
+                                        <span className="text-white text-lg">👤</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+
+                        <main className="flex-1 overflow-y-auto">
+                            {renderSection()}
+                        </main>
+                    </div>
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
 </body>
 </html>
+
