@@ -22,7 +22,7 @@
     }
     .container {
       width: 90%;
-      max-width: 600px;
+      max-width: 800px;
       background: white;
       padding: 25px;
       border-radius: 15px;
@@ -30,15 +30,14 @@
       text-align: center;
       margin-top: 20px;
     }
-    textarea {
+    textarea, select {
       width: 100%;
-      height: 100px;
       padding: 10px;
       border-radius: 10px;
       border: 1px solid #ccc;
-      resize: none;
       font-size: 16px;
-      margin-bottom: 20px;
+      margin-bottom: 15px;
+      resize: none;
     }
     button {
       background-color: #007bff;
@@ -67,39 +66,70 @@
       color: #007bff;
       margin-top: 10px;
     }
+    .options {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
   </style>
 </head>
 <body>
   <h1>👗 Fashionova AI</h1>
   <div class="container">
     <p>Describe your fashion idea and let AI design it instantly!</p>
+    <div class="options">
+      <select id="style">
+        <option value="modern">Modern</option>
+        <option value="vintage">Vintage</option>
+        <option value="streetwear">Streetwear</option>
+        <option value="formal">Formal</option>
+        <option value="K-pop">K-pop Inspired</option>
+      </select>
+      <select id="category">
+        <option value="dress">Dress</option>
+        <option value="jacket">Jacket</option>
+        <option value="shirt">Shirt</option>
+        <option value="pants">Pants</option>
+        <option value="accessories">Accessories</option>
+      </select>
+    </div>
     <textarea id="prompt" placeholder="e.g., a modern floral summer dress with puff sleeves"></textarea>
     <br />
     <button id="generateBtn">Generate Design</button>
-    <div id="loading" class="loading" style="display:none;">🎨 Generating design...</div>
+    <div id="loading" class="loading" style="display:none;">🎨 Generating your fashion design...</div>
     <div class="image-container" id="imageContainer"></div>
   </div>
 
   <script>
     const btn = document.getElementById("generateBtn");
     const promptBox = document.getElementById("prompt");
+    const styleSelect = document.getElementById("style");
+    const categorySelect = document.getElementById("category");
     const loadingText = document.getElementById("loading");
     const imageContainer = document.getElementById("imageContainer");
 
     btn.addEventListener("click", async () => {
       const prompt = promptBox.value.trim();
+      const style = styleSelect.value;
+      const category = categorySelect.value;
+
       if (!prompt) {
         alert("Please enter a description of your design!");
         return;
       }
+
       loadingText.style.display = "block";
       imageContainer.innerHTML = "";
 
-      const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}`;
+      const fullPrompt = `Fashion design of a ${category} in ${style} style, ${prompt}`;
+      const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}`;
 
       const img = document.createElement("img");
       img.src = imageUrl;
-      img.alt = prompt;
+      img.alt = fullPrompt;
+
       img.onload = () => (loadingText.style.display = "none");
       img.onerror = () => {
         loadingText.style.display = "none";
