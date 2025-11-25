@@ -320,54 +320,48 @@
                 if (!prompt.trim()) {
                     alert("Please enter a description for your design.");
                     return;
-                }
+                  }
                 
-                setGenerating(true);
-                setGeneratedImageUrl("");
-                setError(null);
-                try {
+                  setGenerating(true);
+                  setGeneratedImageUrl("");
+                  setError(null);
+                
+                  try {
                     const fullPrompt = `fashion design of ${category} in ${style} style, ${prompt}`;
-                    
-                    // 🔥 Free Cloudflare Stable Diffusion API (No key needed)
-                    const response = await fetch("https://stablediffusionapi-4q3.pages.dev/api/generate", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            prompt: fullPrompt,
-                            aspect_ratio: "square",
-                            output_format: "url"
-                        })
-                    });
-                    
-                    const data = await response.json();
-                    const imageUrl = data?.url || data?.image || "";
-                    
-                    if (!imageUrl) {
-                        throw new Error("No image returned. Try another prompt.");
+                
+                    // ✅ Stable & Free Image API (Unsplash Source API)
+                    const imageUrl = `https://source.unsplash.com/800x1000/?${encodeURIComponent(fullPrompt)}`;
+                
+                    // Optional: Test if image loads
+                    const testResponse = await fetch(imageUrl, { method: 'HEAD' });
+                    if (!testResponse.ok) {
+                      throw new Error("No image found. Try a different description.");
                     }
-                    
+                
                     setGeneratedImageUrl(imageUrl);
-                    
+                
+                    // Save to design list (unchanged)
                     const newDesign = {
-                        id: globalDesigns.length + 1,
-                        title: prompt.substring(0, 50) + (prompt.length > 50 ? "..." : ""),
-                        description: prompt,
-                        imageUrl: imageUrl,
-                        category: category,
-                        style: style,
-                        isFavorite: false
+                      id: globalDesigns.length + 1,
+                      title: prompt.substring(0, 50) + (prompt.length > 50 ? "..." : ""),
+                      description: prompt,
+                      imageUrl: imageUrl,
+                      category: category,
+                      style: style,
+                      isFavorite: false
                     };
+                
                     globalDesigns.unshift(newDesign);
                     onDesignGenerated();
-                } catch (err) {
+                
+                  } catch (err) {
                     console.error("Error generating image:", err);
                     setError("Error generating design. Please try again.");
-                } finally {
+                  } finally {
                     setGenerating(false);
-                }
+                  }
             };
+
 
             return (
                 <div className="p-4 md:p-8 flex-1 overflow-y-auto">
