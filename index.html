@@ -330,16 +330,16 @@
                     const fullPrompt = `fashion design of ${category} in ${style} style, ${prompt}`;
                     // Direct Unsplash image generation - NO FETCH TEST
                     const imageUrl = `https://source.unsplash.com/800x1000/?${encodeURIComponent(fullPrompt)}`;
-                    
+                 
                     setGeneratedImageUrl(imageUrl);
                     
                     const newDesign = {
                         id: globalDesigns.length + 1,
                         title: prompt.substring(0, 50) + (prompt.length > 50 ? "..." : ""),
                         description: prompt,
-                        imageUrl: imageUrl,
-                        category: category,
-                        style: style,
+                        imageUrl,
+                        category,
+                        style,
                         isFavorite: false
                     };
                     
