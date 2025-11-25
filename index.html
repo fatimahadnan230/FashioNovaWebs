@@ -322,37 +322,14 @@
                     return;
                 }
                 
-                setGenerating(true);
-                setGeneratedImageUrl("");
-                setError(null);
+                // Build the full fashion prompt
+                const fullPrompt = `fashion design of ${category} in ${style} style, ${prompt}`;
                 
-                try {
-                    const fullPrompt = `fashion design of ${category} in ${style} style, ${prompt}`;
-                    // Direct Unsplash image generation - NO FETCH TEST
-                    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}`;
-                 
-                    setGeneratedImageUrl(imageUrl);
-                    
-                    const newDesign = {
-                        id: globalDesigns.length + 1,
-                        title: prompt.substring(0, 50) + (prompt.length > 50 ? "..." : ""),
-                        description: prompt,
-                        imageUrl,
-                        category,
-                        style,
-                        isFavorite: false
-                    };
-                    
-                    globalDesigns.unshift(newDesign);
-                    onDesignGenerated();
-                
-                } catch (err) {
-                    console.error("Error generating image:", err);
-                    setError("Error generating design. Please try again.");
-                } finally {
-                    setGenerating(false);
-                }
+                // Open Microsoft Copilot (Bing Image Creator) with the prompt pre-filled
+                const bingUrl = `https://www.bing.com/images/create?q=${encodeURIComponent(fullPrompt)}`;
+                window.open(bingUrl, "_blank");
             };
+
 
             return (
                 <div className="p-4 md:p-8 flex-1 overflow-y-auto">
