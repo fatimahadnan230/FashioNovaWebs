@@ -317,44 +317,66 @@
             const [error, setError] = useState(null);
 
             const handleGenerate = async () => {
-              if (!prompt.trim()) {
-                alert("Please enter a description for your design.");
-                return;
-              }
-              setGenerating(true);
-              setGeneratedImageUrl("");
-              setError(null);
-              
-              try {
-                const fullPrompt = `fashion design of ${category} in ${style} style, ${prompt}`;
-                // Use Pollinations.ai for instant image generation (no key needed)
-                const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}`;
+                if (!prompt.trim()) {
+                    alert("Please enter a description for your design.");
+                    return;
+                }
                 
-                // Simulate a short loading time
-                await new Promise(resolve => setTimeout(resolve, 2000));
-                
-                setGeneratedImageUrl(imageUrl);
-                
-                // Add to global designs for demo
-                const newDesign = {
-                  id: globalDesigns.length + 1,
-                  title: prompt.substring(0, 50) + (prompt.length > 50 ? "..." : ""),
-                  description: prompt,
-                  imageUrl: imageUrl,
-                  category: category,
-                  style: style,
-                  isFavorite: false
-                };
-                globalDesigns.unshift(newDesign);
-                onDesignGenerated();
-              } catch (err) {
-                console.error("Error generating image:", err);
-                setError("Error generating design. Please try again.");
-              } finally {
-                setGenerating(false);
-              }
-            };
+                setGenerating(true);
+                setGeneratedImageUrl("");
+                setError(null);
 
+                // Construct a more detailed prompt for the AI
+                const fullPrompt = `A high-quality, photorealistic fashion design of a ${category} in a ${style} style, based on the description: "${prompt}". Highly detailed, haute couture, studio lighting.`;
+
+                try {
+                    // Gemini API call for image generation (Imagen 3.0)
+                    const payload = {
+                        instances: { prompt: fullPrompt },
+                        parameters: { "sampleCount": 1 }
+                    };
+                    // API Key updated here:
+                    const apiKey = "AIzaSyB6Fnw1fQnG_zzr8qn-FEMdoJJLCjir8Do"; 
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorBody = await response.json();
+                        throw new Error(`API error: ${response.status} - ${errorBody.error?.message || response.statusText}`);
+                    }
+
+                    const result = await response.json();
+
+                    if (result.predictions && result.predictions.length > 0 && result.predictions[0].bytesBase64Encoded) {
+                        const imageUrl = `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+                        setGeneratedImageUrl(imageUrl);
+                        // Add to global designs for demo purposes
+                        const newDesign = {
+                            id: globalDesigns.length + 1,
+                            title: prompt.substring(0, 50) + (prompt.length > 50 ? "..." : ""),
+                            description: prompt,
+                            imageUrl: imageUrl,
+                            category: category,
+                            style: style,
+                            isFavorite: false
+                        };
+                        globalDesigns.unshift(newDesign); // Add to the beginning
+                        onDesignGenerated(); // Notify App component to re-render
+                    } else {
+                        throw new Error('No image data received from API.');
+                    }
+                } catch (err) {
+                    console.error("Error generating image:", err);
+                    setError(err.message || "An unexpected error occurred during generation. Please try again.");
+                } finally {
+                    setGenerating(false);
+                }
+            };
 
             return (
                 <div className="p-4 md:p-8 flex-1 overflow-y-auto">
@@ -656,4 +678,3 @@
     </script>
 </body>
 </html>
-
