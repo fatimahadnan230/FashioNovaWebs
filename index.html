@@ -322,12 +322,37 @@
                     return;
                 }
                 
-                // Build the full fashion prompt
-                const fullPrompt = `fashion design of ${category} in ${style} style, ${prompt}`;
+                setGenerating(true);
+                setGeneratedImageUrl("");
+                setError(null);
                 
-                // Open Microsoft Copilot (Bing Image Creator) with the prompt pre-filled
-                const bingUrl = `https://www.bing.com/images/create?q=${encodeURIComponent(fullPrompt)}`;
-                window.open(bingUrl, "_blank");
+                try {
+                    const fullPrompt = `fashion design of ${category} in ${style} style, ${prompt}`;
+
+                    // Direct Pollinations image generation (displays inside website)
+                    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}`;
+                    
+                    setGeneratedImageUrl(imageUrl);
+
+                    // Save to design history
+                    const newDesign = {
+                        id: globalDesigns.length + 1,
+                        title: fullPrompt.substring(0, 50) + (fullPrompt.length > 50 ? "..." : ""),
+                        description: fullPrompt,
+                        imageUrl: imageUrl,
+                        category: category,
+                        style: style,
+                        isFavorite: false
+                    };
+                    
+                    globalDesigns.unshift(newDesign);
+                    onDesignGenerated();
+                } catch (err) {
+                    console.error("Image generation error:", err);
+                    setError("Error generating design. Please try again.");
+                } finally {
+                    setGenerating(false);
+                }
             };
 
 
