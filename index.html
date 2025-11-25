@@ -329,7 +329,7 @@
                 try {
                     const fullPrompt = `fashion design of ${category} in ${style} style, ${prompt}`;
                     // Direct Unsplash image generation - NO FETCH TEST
-                    const imageUrl = `https://source.unsplash.com/800x1000/?${encodeURIComponent(fullPrompt)}`;
+                    const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(fullPrompt)}`;
                  
                     setGeneratedImageUrl(imageUrl);
                     
